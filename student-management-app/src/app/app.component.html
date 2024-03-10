@@ -1,0 +1,193 @@
+<p-toast></p-toast>
+
+<nav class="navbar bg-body-tertiary">
+  <div class="container-fluid justify-content-center">
+    <a class="navbar-brand" href="#">Student Management App</a>
+  </div>
+</nav>
+
+<div class="my-2">
+  <button type="button" class="btn btn-outline-primary" (click)="addStudent()">
+    Add Student
+  </button>
+</div>
+<!--Prime Ng Table-->
+<ng-container *ngIf="!isLoading">
+  <p-table
+    #dt
+    [value]="students"
+    [rows]="10"
+    [paginator]="true"
+    [globalFilterFields]="['name', 'rollNo', 'email', 'course']"
+    responsiveLayout="scroll"
+    [rowHover]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div
+        class="p-d-flex p-ai-center p-jc-between"
+        style="display: flex; justify-content: space-between"
+      >
+        <h5 class="p-m-0">
+          Students Table({{ students ? students.length : 0 }})
+        </h5>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            [(ngModel)]="searchValue"
+            (input)="dt.filterGlobal(searchValue, 'contains')"
+            placeholder="Search..."
+          />
+        </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Roll Number</th>
+        <th>Name</th>
+        <th>Course</th>
+        <th>Email</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-student let-i="index">
+      <tr>
+        <td>{{ student.rollNo }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.course }}</td>
+        <td>
+          {{ student.email }}
+        </td>
+        <td>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-success p-mr-2"
+            (click)="editStudent(student)"
+          ></button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-warning"
+            (click)="delete(student._id)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-ai-center p-jc-between">
+        In total there are {{ students ? students.length : 0 }} students.
+      </div>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div
+        *ngIf="students && students.length > 0"
+        class="p-d-flex p-ai-center p-jc-between"
+      >
+        In total there are {{ students ? students.length : 0 }} students.
+      </div>
+      <div
+        *ngIf="students && students.length === 0"
+        class="alert alert-secondary"
+        role="alert"
+      >
+        No studenst has been configured.
+      </div>
+    </ng-template>
+  </p-table>
+  <p-dialog
+    [(visible)]="showDialogue"
+    [style]="{ width: '450px' }"
+    header="Student Details"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+    <ng-template pTemplate="content">
+      <div class="p-field">
+        <label for="name">Roll Number</label>
+        <input
+          type="text"
+          pInputText
+          id="name"
+          [(ngModel)]="student.rollNo"
+          required
+          autofocus
+          [disabled]="editMode"
+        />
+        <small class="p-error" *ngIf="submitted && !student.rollNo"
+          >Roll Number is required.</small
+        >
+      </div>
+
+      <div class="p-field">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          pInputText
+          id="name"
+          [(ngModel)]="student.name"
+          required
+          autofocus
+        />
+        <small class="p-error" *ngIf="submitted && !student.name"
+          >Name is required.</small
+        >
+      </div>
+
+      <div class="p-field">
+        <label for="name">Course</label>
+        <input
+          type="text"
+          pInputText
+          id="name"
+          [(ngModel)]="student.course"
+          required
+          autofocus
+        />
+        <small class="p-error" *ngIf="submitted && !student.course"
+          >Course is required.</small
+        >
+      </div>
+
+      <div class="p-field">
+        <label for="name">Email</label>
+        <input
+          type="text"
+          pInputText
+          id="name"
+          [(ngModel)]="student.email"
+          required
+          autofocus
+        />
+        <small class="p-error" *ngIf="submitted && !student.course"
+          >Email is required.</small
+        >
+      </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        pRipple
+        [label]="editMode ?'Update':'Save'"
+        icon="pi pi-check"
+        class="p-button-text"
+        (click)="saveStudent()"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</ng-container>
